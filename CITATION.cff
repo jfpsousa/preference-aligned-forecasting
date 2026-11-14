@@ -1,0 +1,39 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the associated paper."
+title: "Temporal-DPO: Preference-Aligned Forecasting"
+abstract: >-
+  Reference implementation of Temporal Preference Optimization (TPO) and the
+  Temporal-DPO algorithm for utility-driven multi-horizon time series forecasting.
+authors:
+  - family-names: "Sousa"
+    given-names: "João"
+    affiliation: "NOVA Information Management School (NOVA IMS), Universidade Nova de Lisboa"
+    orcid: "https://orcid.org/0000-0001-5600-9707"
+    email: "d20210022@novaims.unl.pt"
+  - family-names: "Henriques"
+    given-names: "Roberto"
+    affiliation: "NOVA Information Management School (NOVA IMS), Universidade Nova de Lisboa"
+    orcid: "https://orcid.org/0000-0002-4862-8177"
+    email: "roberto@novaims.unl.pt"
+version: "0.2.0-pre"
+date-released: "2026-11-10"
+license: MIT
+repository-code: "https://github.com/jfpsousa/preference-aligned-forecasting"
+keywords:
+  - time series forecasting
+  - preference learning
+  - direct preference optimization
+  - decision-focused learning
+preferred-citation:
+  type: article
+  title: "Preference-Aligned Forecasting: Utility-Driven Time Series Optimization"
+  journal: "International Journal of Forecasting"
+  year: 2026
+  notes: "Manuscript IJF-D-25-01243R3."
+  authors:
+    - family-names: "Sousa"
+      given-names: "João"
+      orcid: "https://orcid.org/0000-0001-5600-9707"
+    - family-names: "Henriques"
+      given-names: "Roberto"
+      orcid: "https://orcid.org/0000-0002-4862-8177"

@@ -1,0 +1,6 @@
+# SHA-256 of every raw file the pipeline reads. Checked by tpo/data.py after
+# download; a mismatch stops the run (the data vintage would differ).
+# M5 is checked on parsed content (Kaggle and mirror files differ in layout):
+fba7eec0fd76139ea1e78f6b6f5b64a1cbdc3b255e4a4bee235d4e00c2454520  m5:content
+4259c9d7ece5dbee9ab8d53682baac68d791c864f0f64a52b4043cb3b90894b7  raw/uci/household_power_consumption.txt
+cdba162478855ff543f54f10999deda73b53b5e5cd4b06076c4c2ec27f3408dc  snapshots/yahoo_etf_2018_2023.csv

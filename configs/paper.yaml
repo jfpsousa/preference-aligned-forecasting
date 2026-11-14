@@ -1,0 +1,94 @@
+# Configuration for the full reproduction of the manuscript's tables.
+#
+# Every value is annotated:
+#   [paper]  stated in the manuscript (section given)
+#   [choice] NOT specified by the manuscript; chosen for this package and
+#            listed in README.md, "Choices the manuscript does not specify"
+#
+# reproduce.sh uses this file unless --smoke is given.
+
+seeds: [42, 123, 456, 789, 2024]          # [paper] App. C: 5 seeds; values [choice]
+data_seed: 0                              # [choice] fixed seed for M5 product sampling
+                                          #          and synthetic data generation
+
+parallel:
+  workers: 8                              # concurrent jobs
+  threads_per_worker: 2                   # torch threads per job
+
+architecture:                             # [paper] Sec. 7.1
+  d_model: 256
+  num_heads: 8
+  num_layers: 4
+  d_ff: 1024
+  dropout: 0.1
+  patch_len: 16                           # [choice] patch tokenisation of the context
+  stride: 8                               # [choice]
+
+context_length: 96                        # [choice] input window length (time steps)
+
+supervised:                               # MSE baseline (= T-DPO reference policy),
+  epochs: 50                              # [paper] Sec. 7.1: 50 epochs of MSE pre-training
+  steps_per_epoch: 50                     # [choice] mini-batches per epoch
+  batch_size: 32                          # [paper]
+  learning_rate: 1.0e-4                   # [paper] AdamW, 1e-4
+  weight_decay: 0.01                      # [choice] AdamW default-style decay
+
+tdpo:
+  beta: 0.1                               # [paper]
+  gamma: 0.95                             # [paper]
+  num_pairs: 5000                         # [paper] 5,000 pairs per domain
+  epochs: 20                              # [paper]
+  learning_rate: 5.0e-5                   # [paper]
+  batch_size: 32                          # [paper]
+  num_candidates: 8                       # [choice] K candidates per context (Sec. 6.2)
+
+constitution:                             # Sec. 6.1-6.2; parameter values are [choice]
+  kappa: 2.0                              # P1 smoothness tolerance; paper: "typically [1,3]"
+  z_alpha: 1.96                           # P2 [paper] example value
+  lambda: 1.0                             # P4 conservatism magnitude (upward)
+  weights: [0.2, 0.2, 1.0, 0.5]           # w1..w4; paper: "in retail, w3 is dominant"
+
+evaluation:
+  n_actions: 21                           # [choice] size of the discrete action set A
+                                          # in Eqs (15)-(16); Table S1 reports 11/21/51/201
+  sensitivity_n_actions: [11, 21, 51, 201]
+
+domains:                                  # cost structure [paper] Sec. 7.1
+  retail:  {horizon: 28, alpha_under: 3.0, alpha_over: 1.0}
+  energy:  {horizon: 24, alpha_under: 10.0, alpha_over: 1.0,
+            peak_hours: [10, 11, 12, 13, 18, 19, 20],   # [paper] App. B: 10-14h, 18-21h
+            offpeak_alpha_under: 1.0}                   # [paper] "10x the base cost"
+  finance: {horizon: 5, alpha_under: 2.0, alpha_over: 1.0}
+
+datasets:
+  synthetic_retail:  {domain: retail,  kind: synthetic, num_series: 100, length: 1000,
+                      split: [0.7, 0.1, 0.2]}            # [choice] sizes and split
+  synthetic_energy:  {domain: energy,  kind: synthetic, num_series: 100, length: 2016,
+                      split: [0.7, 0.1, 0.2]}
+  synthetic_finance: {domain: finance, kind: synthetic, num_series: 100, length: 1500,
+                      split: [0.7, 0.1, 0.2]}
+  m5:        {domain: retail,  kind: real, num_products: 1000,
+              split: [0.8, 0.1, 0.1]}                    # [paper] App. B
+  uci_energy: {domain: energy, kind: real, split: [0.7, 0.1, 0.2]}   # [paper] App. B
+  yahoo_etf: {domain: finance, kind: real,
+              tickers: [SPY, QQQ, IWM],                  # [paper]
+              train_end: "2023-01-01",                   # [paper] 2018-2022 train
+              val_end: "2023-07-01"}                     # [paper] Jan-Jun 2023 val, Jul-Dec test
+
+experiments:
+  table2_datasets: [synthetic_retail, synthetic_energy, synthetic_finance]
+  table2_methods: [naive, mse, patchtst, informer, asymmetric, tdpo, oracle]
+  table3_datasets: [m5, uci_energy, yahoo_etf]
+  table3_methods: [naive, mse, asymmetric, tdpo]
+  ablation_datasets: [synthetic_retail, synthetic_energy, synthetic_finance]
+  gamma_grid: [0.75, 0.80, 0.85, 0.90, 0.95, 0.98, 0.99, 1.0]     # [paper] Fig. 3
+  pair_grid: [500, 1000, 2000, 4000, 6000, 8000, 10000]            # [paper] Fig. 3
+  cost_ratio_dataset: m5                                           # [paper] Sec. 7.5
+  cost_ratio_grid: [2, 3, 5, 10]                                   # [paper] Table 4
+  beta_datasets: [uci_energy, m5, yahoo_etf]   # [paper] Sec. 7.4: UCI Energy, "similar
+                                               # pattern on the other two domains"
+  beta_grid: [0.01, 0.05, 0.1, 0.5, 1.0, 2.0]  # union of the two grids below
+  beta_ablation_grid: [0.1, 0.5, 1.0, 2.0]     # [paper] Sec. 7.4
+  beta_selection_grid: [0.01, 0.05, 0.1, 0.5, 1.0]   # [paper] Sec. 7.1 grid search
+  beta_selection_metric: decision_accuracy     # [choice] validation criterion; the
+                                               # paper does not say which metric

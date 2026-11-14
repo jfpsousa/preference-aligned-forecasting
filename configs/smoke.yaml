@@ -1,0 +1,17 @@
+# Smoke test: the complete pipeline (all datasets, all stages, all tables) at a
+# tiny scale, to check the installation in ~10 minutes. Numbers produced with
+# this config are NOT the paper's results.
+extends: paper.yaml
+
+seeds: [42, 123]
+architecture: {d_model: 32, num_heads: 2, num_layers: 1, d_ff: 64}
+supervised: {epochs: 2, steps_per_epoch: 10}
+tdpo: {num_pairs: 200, epochs: 2}
+evaluation: {sensitivity_n_actions: [11, 21]}
+experiments:
+  gamma_grid: [0.95, 1.0]
+  pair_grid: [100, 200]
+  cost_ratio_grid: [2, 3]
+  beta_grid: [0.1, 1.0]
+  beta_ablation_grid: [0.1, 1.0]
+  beta_selection_grid: [0.1, 1.0]
